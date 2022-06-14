@@ -23,26 +23,26 @@ NOW, you are ready to use the script.
 import os
 import json
 
-# # Try importing Punctuator.
-# try:
-	# from punctuator import Punctuator
-# except ModuleNotFoundError:
-	# print("Punctuator module not found! Run pip install punctuator to install it.")
+# Try importing Punctuator.
+try:
+	from punctuator import Punctuator
+except ModuleNotFoundError:
+	print("Punctuator module not found! Run pip install punctuator to install it.")
 
-# # Enforce Python version before this is run.
-# import sys
-# if sys.version_info.major != 3 or sys.version_info.minor != 9:
-	# print("You need Python 3.9 for this script to work, as we need numpy=1.20.3, which only runs on Python 3.9.")
-	# print("Exiting...")
-	# exit()
+# Enforce Python version before this is run.
+import sys
+if sys.version_info.major != 3 or sys.version_info.minor != 9:
+	print("You need Python 3.9 for this script to work, as we need numpy=1.20.3, which only runs on Python 3.9.")
+	print("Exiting...")
+	exit()
 
-# # Check if the correct version of numpy is installed.
-# try:
-	# import numpy
-# except ModuleNotFoundError:
-	# print("numpy is not installed. Run pip install numpy=1.20.3 to install it.")
-	# print("Exiting...")
-	# exit()
+# Check if the correct version of numpy is installed.
+try:
+	import numpy
+except ModuleNotFoundError:
+	print("numpy is not installed. Run pip install numpy=1.20.3 to install it.")
+	print("Exiting...")
+	exit()
  
    
 class Punktuator:
@@ -52,6 +52,8 @@ class Punktuator:
 		self.modelPath = self.determineModel()
 		self.inputPath = self.determineInputFile()
 		self.outputPath = self.determineOutputPath()
+		
+		self.run()
 		
 	def initConfig(self):
 		# Read the settings file to get the paths that we want.
@@ -77,7 +79,8 @@ class Punktuator:
 				"directory": "models"
 			},
 			"inputDirectory": "inputs",
-			"outputDirectory": "outputs"
+			"outputDirectory": "outputs",
+			"debug": true
 		}
 		
 		# Write a config file if there isn't one.
@@ -157,6 +160,7 @@ class Punktuator:
 				
 			else:
 				print("There are no input files!")
+				exit()
 				
 		except FileNotFoundError:
 			os.mkdir(self.config["inputDirectory"])
@@ -167,6 +171,10 @@ class Punktuator:
 			
 	# Get the path to output to from the input path.
 	def determineOutputPath(self):
+		# Create the folder if it does not exist.
+		if not os.path.exists(self.config["outputDirectory"]):
+			os.mkdir(self.config["outputDirectory"])
+		
 		path = self.inputPath.replace(self.config["inputDirectory"],self.config["outputDirectory"])
 		print("File will be output to {:s}.".format(path))
 		return path
@@ -174,6 +182,9 @@ class Punktuator:
 	def run(self):
 		
 		try:
+			
+			p = Punctuator(self.modelPath)
+			
 			with open(self.inputPath, 'r+') as f:
 			
 				subtitles = f.readlines()
@@ -183,7 +194,7 @@ class Punktuator:
 				lengths = []
 				
 				for i in range(len(subtitles)):
-					if i % 3 == 0:  # Adding timings for the separate Array
+					if i % 3 == 0:	# Adding timings for the separate Array
 						subtitles[i] = subtitles[i].strip()
 						timings.append(subtitles[i])
 						continue
@@ -195,9 +206,13 @@ class Punktuator:
 					text += subtitles[i]
 				f.close()
 				
-				print(text)  # Just checking the text
-				corrected_text = p.punctuate(text)  # punctuate method is the one who makes punctuation on the text.
+				print("\nProcessed text for punctuation:\n")
+				print(text)	 # Just checking the text
+				
+				corrected_text = p.punctuate(text).replace(". ",".\n\n")	# punctuate method is the one who makes punctuation on the text.
+				print("\nPunctuated text:\n")
 				print(corrected_text)  # Just checking the corrected text
+				
 				with open(self.outputPath, 'w') as f:  # Writing to the file
 					f.write(corrected_text)
 					print("File successfully output to {:s}.".format(self.outputPath))
@@ -207,10 +222,6 @@ class Punktuator:
 			print('Error with directory of the captions file.'
 				  '\nCheck its location again please.')
 			print("-" * 43)
-		except:
-			print("-" * 100)
-			print("Another error occurred, but the current error is not related to the location of the captions file.")
-			print("-" * 100)
 		
-    
+		
 Punktuator()   
