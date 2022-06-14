@@ -236,7 +236,7 @@ class Punktuator:
 			if re.search("^[\s\r\n]$",line) != None:
 				continue
 			
-			result += line.strip()
+			result += " " + line.strip()
 			if self.config["debug"]: print(line)
 			
 		if self.config["debug"]: print('-' * 20)
