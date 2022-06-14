@@ -4,6 +4,8 @@ To use this script, your **Python version that Windows refers to needs to be no 
 You can change it in your system environment variables.
 This means that if you are using python version 3.10, the following script will not work properly.
 
+To run the script, just use `main.py`.
+
 Required Packages
 -----------------
 **Make sure you have the following packages:*
