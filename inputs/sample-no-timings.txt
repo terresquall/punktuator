@@ -1,0 +1,59 @@
+hi everyone and welcome back to part two of this series a quick recap what i did in the last video is a basic setup of the player's movements along with some platforms on the scene today we'll be expanding on this to make the camera follow the player around so that we could explore the level but before that we will fix a type of mistake first
+
+now create a script called camera controller with a public transform variable called target and the camera reference
+
+to make the camera follow the player you might think that you could just directly assign the target's position to the camera's position
+
+however that's not possible as the current z position is different from the players furthermore instead of having the player be in the middle of the screen we usually want the camera's position to be slightly in front so that we could see the area ahead
+
+first create new factor 3 call offset and assign the initial value of negative time for the z-axis
+
+also create a float cost smoothing as we're going to be using for smooth camera movement
+
+under update create a local variable for offset this is for changing the direction of the offset based on where the player is facing
+
+with the normal offset when the player is moving right a negative x value while moving left
+
+thereafter click on the vector3 target position which is the final position that we want the camera to be in
+
+lastly use lub to move the current position to our targeted position without smoothing times time.time setting the speed of the move we're going to delete the oco 2.
+
+at unity you should be able to see the camera following the player the only thing is you can also see the undeveloped of the map to prevent this we can create camera boundaries to force the camera to only show the play area that we want first let's create more platforms so they have wider space to work with
+
+with that done in the script create a float called camera distance with a default value of 10 and a rectangle which are going to be used to denote the boundaries
+
+at the same time add two vector2 variables for the minimum and maximum positions of the camera
+
+next create a function called calculate boundary and call it instead we're going to use this function to calculate our minimum and maximum position that the camera can go to we're going to start by getting the bottom left and top right of our screen so that we know how much of an area our camera is covering
+
+then calculate the half value of our width and height so that we are getting the center point of the screen which is also where the cameras transformed the position lies
+
+lastly to get our camera's minimum position and head the half value to the minimum position of the boundary
+
+vice versa for the next position maximum position minus a half value
+
+of course when creating the boundary we will want to have visual feedback on what we are doing however rectangle does not have that functionality as it only draws the invisible box for us first we need to distribute ourselves by using gizmos a unity tool for visual debugging and scene setup as whatever is that under this function only shows up in the scene view and not the game we're going to set the color of the length to green before proceeding to use gizmos draw line to draw a line between two vectors that we have set in this case we are drawing from the top left to the top of the boundary
+
+copy and paste this line three more times and change the position so the address from the top right to the bottom right
+
+bottom right to the bottom left
+
+and bottom left to the top left
+
+if that we're able to see the outline of the boundary that we have set
+
+so set the boundary to cover the space that you wanted to be shown in the game
+
+then we're going to create another function we should take in our target position within it we're checking if the position is outside the boundary and fix it if it is we're doing it for the exposition first setting the position to the minimum if below the minimum x value and setting the position to the maximum if above the maximum x value
+
+the same applies for the y position
+
+the final position thereafter
+
+now if the bounds width and height are greater than zero set the target position to the return value of the function remember to do this after target position has included the offset
+
+let's test it out
+
+yup everything is working lastly i'm going to comment on my code for the scripts so let's clear what each code is doing
+
+i hope everyone enjoyed the video thanks for watching and see you next time

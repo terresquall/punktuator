@@ -1,0 +1,8 @@
+{
+    "models": {
+        "directory": "models"
+    },
+    "inputDirectory": "inputs",
+    "outputDirectory": "outputs",
+	"debug": true
+}

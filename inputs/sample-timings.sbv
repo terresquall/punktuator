@@ -1,0 +1,237 @@
+0:00:00.000,0:00:02.240
+hi everyone and welcome back 
+to part two of this series
+
+0:00:05.440,0:00:09.120
+a quick recap what i did in the last video 
+is a basic setup of the player's movements
+
+0:00:09.120,0:00:12.880
+along with some platforms on the 
+scene today we'll be expanding on
+
+0:00:12.880,0:00:15.920
+this to make the camera follow the player 
+around so that we could explore the level
+
+0:00:17.520,0:00:20.080
+but before that we will 
+fix a type of mistake first
+
+0:00:23.920,0:00:26.000
+now create a script called camera controller
+
+0:00:27.440,0:00:30.400
+with a public transform variable 
+called target and the camera reference
+
+0:00:33.760,0:00:36.080
+to make the camera follow the player 
+you might think that you could
+
+0:00:36.080,0:00:39.120
+just directly assign the target's 
+position to the camera's position
+
+0:00:43.360,0:00:47.360
+however that's not possible as the current 
+z position is different from the players
+
+0:00:49.360,0:00:54.240
+furthermore instead of having the player be 
+in the middle of the screen we usually want
+
+0:00:54.240,0:00:57.840
+the camera's position to be slightly in 
+front so that we could see the area ahead
+
+0:01:02.480,0:01:06.960
+first create new factor 3 call offset and assign 
+the initial value of negative time for the z-axis
+
+0:01:09.760,0:01:13.600
+also create a float cost smoothing as we're 
+going to be using for smooth camera movement
+
+0:01:18.800,0:01:22.720
+under update create a local variable 
+for offset this is for changing the
+
+0:01:22.720,0:01:25.840
+direction of the offset based 
+on where the player is facing
+
+0:01:28.880,0:01:34.880
+with the normal offset when the player is moving 
+right a negative x value while moving left
+
+0:01:38.880,0:01:42.240
+thereafter click on the vector3 
+target position which is the
+
+0:01:42.240,0:01:44.000
+final position that we want the camera to be in
+
+0:01:46.400,0:01:49.920
+lastly use lub to move the current 
+position to our targeted position
+
+0:01:50.560,0:01:56.720
+without smoothing times time.time setting the 
+speed of the move we're going to delete the oco 2.
+
+0:02:04.080,0:02:06.560
+at unity you should be able to see 
+the camera following the player
+
+0:02:07.600,0:02:13.040
+the only thing is you can also see the 
+undeveloped of the map to prevent this
+
+0:02:13.040,0:02:16.880
+we can create camera boundaries to force the 
+camera to only show the play area that we want
+
+0:02:18.480,0:02:21.840
+first let's create more platforms so 
+they have wider space to work with
+
+0:02:28.480,0:02:32.480
+with that done in the script create a float 
+called camera distance with a default value
+
+0:02:32.480,0:02:35.840
+of 10 and a rectangle which are going 
+to be used to denote the boundaries
+
+0:02:39.440,0:02:44.080
+at the same time add two vector2 variables for 
+the minimum and maximum positions of the camera
+
+0:02:46.880,0:02:50.640
+next create a function called calculate 
+boundary and call it instead we're going
+
+0:02:50.640,0:02:54.320
+to use this function to calculate our minimum 
+and maximum position that the camera can go to
+
+0:02:55.200,0:02:57.440
+we're going to start by getting 
+the bottom left and top right of
+
+0:02:57.440,0:03:03.840
+our screen so that we know how much 
+of an area our camera is covering
+
+0:03:11.200,0:03:15.120
+then calculate the half value of our width 
+and height so that we are getting the center
+
+0:03:15.120,0:03:18.400
+point of the screen which is also where 
+the cameras transformed the position lies
+
+0:03:21.920,0:03:24.800
+lastly to get our camera's 
+minimum position and head the
+
+0:03:24.800,0:03:27.040
+half value to the minimum position of the boundary
+
+0:03:29.760,0:03:34.000
+vice versa for the next position 
+maximum position minus a half value
+
+0:03:41.280,0:03:45.360
+of course when creating the boundary we will 
+want to have visual feedback on what we are doing
+
+0:03:45.360,0:03:49.200
+however rectangle does not have that functionality 
+as it only draws the invisible box for us
+
+0:03:50.320,0:03:56.080
+first we need to distribute ourselves by using 
+gizmos a unity tool for visual debugging and scene
+
+0:03:56.080,0:04:00.800
+setup as whatever is that under this function 
+only shows up in the scene view and not the game
+
+0:04:02.080,0:04:03.600
+we're going to set the 
+color of the length to green
+
+0:04:05.200,0:04:09.600
+before proceeding to use gizmos draw line to 
+draw a line between two vectors that we have set
+
+0:04:11.280,0:04:14.160
+in this case we are drawing from the 
+top left to the top of the boundary
+
+0:04:17.760,0:04:20.560
+copy and paste this line three more 
+times and change the position so the
+
+0:04:20.560,0:04:22.240
+address from the top right to the bottom right
+
+0:04:24.880,0:04:27.840
+bottom right to the bottom left
+
+0:04:29.120,0:04:30.480
+and bottom left to the top left
+
+0:04:38.640,0:04:41.840
+if that we're able to see the outline 
+of the boundary that we have set
+
+0:04:44.800,0:04:55.840
+so set the boundary to cover the space 
+that you wanted to be shown in the game
+
+0:04:59.040,0:05:02.160
+then we're going to create another function 
+we should take in our target position
+
+0:05:03.360,0:05:08.400
+within it we're checking if the position is 
+outside the boundary and fix it if it is we're
+
+0:05:08.400,0:05:13.680
+doing it for the exposition first setting the 
+position to the minimum if below the minimum
+
+0:05:13.680,0:05:18.640
+x value and setting the position to the 
+maximum if above the maximum x value
+
+0:05:23.440,0:05:38.160
+the same applies for the y position
+
+0:05:38.160,0:05:39.440
+the final position thereafter
+
+0:05:41.760,0:05:46.240
+now if the bounds width and height are greater 
+than zero set the target position to the return
+
+0:05:46.240,0:05:52.080
+value of the function remember to do this 
+after target position has included the offset
+
+0:05:58.480,0:05:59.200
+let's test it out
+
+0:06:03.680,0:06:08.240
+yup everything is working lastly i'm going 
+to comment on my code for the scripts
+
+0:06:08.240,0:06:19.840
+so let's clear what each code is doing
+
+0:06:50.720,0:06:53.840
+i hope everyone enjoyed the video thanks 
+for watching and see you next time

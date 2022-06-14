@@ -1,0 +1,7 @@
+models/*.pcl
+inputs/*.*
+outputs/*.*
+
+!inputs/readme.md
+!inputs/sample*
+!outputs/readme.md

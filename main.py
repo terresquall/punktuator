@@ -19,9 +19,9 @@ p = Punctuator('path/to/the/model'). You can see my example in the code.
 NOW, you are ready to use the script.
 """
 
-# Import essential libraries.
-import os
-import json
+import os # OS library
+import json # JSON library
+import re # Regex library
 
 # Try importing Punctuator.
 try:
@@ -80,7 +80,7 @@ class Punktuator:
 			},
 			"inputDirectory": "inputs",
 			"outputDirectory": "outputs",
-			"debug": true
+			"debug": True
 		}
 		
 		# Write a config file if there isn't one.
@@ -141,6 +141,11 @@ class Punktuator:
 			index = 1
 			inputs = []
 			for f in files:
+				   
+				# Ignore MD files.
+				fdat = os.path.splitext(f)
+				if fdat[1] == '.md': continue
+			
 				print("{:d}. {:s}".format(index,f))
 				inputs.append(f)
 				index += 1
@@ -185,43 +190,84 @@ class Punktuator:
 			
 			p = Punctuator(self.modelPath)
 			
-			with open(self.inputPath, 'r+') as f:
+			# Check if the program should take inputs into account.
+			# And if it should include timings in output.
+			input_has_timings = input("Does the input file have timings? (y/n) ").lower() == "y"
+			if input_has_timings:
+				output_has_timings = input("Should timings be included with the output? (y/n) ").lower == "y"
+			else:
+				output_has_timings = False
 			
-				subtitles = f.readlines()
-				f.seek(0)
-				text = ''
-				timings = []
-				lengths = []
+			# Begin reading the file.
+			with open(self.inputPath, 'r+') as f:
 				
-				for i in range(len(subtitles)):
-					if i % 3 == 0:	# Adding timings for the separate Array
-						subtitles[i] = subtitles[i].strip()
-						timings.append(subtitles[i])
-						continue
-					if subtitles[i] == '\n': # Skipping the new lines
-						continue
-						
-					# in the end of each line, there is \n, so I am changing it to space
-					subtitles[i] = subtitles[i].replace('\n', ' ')
-					text += subtitles[i]
-				f.close()
-				
-				print("\nProcessed text for punctuation:\n")
-				print(text)	 # Just checking the text
-				
-				corrected_text = p.punctuate(text).replace(". ",".\n\n")	# punctuate method is the one who makes punctuation on the text.
-				print("\nPunctuated text:\n")
-				print(corrected_text)  # Just checking the corrected text
-				
-				with open(self.outputPath, 'w') as f:  # Writing to the file
-					f.write(corrected_text)
-					print("File successfully output to {:s}.".format(self.outputPath))
+				if input_has_timings:
+					# NOT DONE. We have to process the output also.
+					result = self.processInputTextWithTimings(f.readlines())
+					print(result)
+					
+				else:
+					
+					result = self.processInputTextWithoutTimings(f.readlines())
+					print("Punctuating, please wait...\n")
+					punctuated_text = p.punctuate(result).replace(". ",".\n\n")
+					
+					with open(self.outputPath, 'w') as saved:
+						saved.write(punctuated_text)
+						print("\nFile successfully output to {:s}.".format(self.outputPath))
 					
 		except FileNotFoundError:
 			print("-" * 43)
 			print('Error with directory of the captions file.'
 				  '\nCheck its location again please.')
 			print("-" * 43)
+	
+	# Process an array of data and output a string without any newlines.
+	def processInputTextWithoutTimings(self, data):
+		
+		result = ""
+		if self.config["debug"]:
+			print("\nReading lines without timing:")
+			print('-' * 20)
+		
+		for line in data:
+		
+			# Ignore empty lines.
+			if re.search("^[\s\r\n]$",line) != None:
+				continue
+			
+			result += line.strip()
+			if self.config["debug"]: print(line)
+			
+		if self.config["debug"]: print('-' * 20)
+		return result
+		
+	# Process an array of data and returns a Dictionary with the key being the
+	# timing and the value being the lines.
+	def processInputTextWithTimings(self, data):
+		
+		result = {}
+		currentTiming = "no-timing"
+		if self.config["debug"]: 
+			print("\nReading lines with timing:")
+			print('-' * 20)
+		
+		for line in data:
+			# Ignore empty lines.
+			if re.search("^[\s\n]$",line) == None:
+				continue
+			
+			# Check if this is a timing line.
+			if re.search("^[0-9,:\.]*?\n$",line) != None:
+				currentTiming = line
+				if self.config["debug"]: print("Reading timing {:s}".format(line))
+				
+			# Otherwise, put the strings into the current timing.
+			result[currentTiming] += " " + line
+			if self.config["debug"]: print(line)
+		
+		if(self.config["debug"]): print('-' * 20)
+		return result
 		
 		
 Punktuator()   
