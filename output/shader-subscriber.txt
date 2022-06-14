@@ -1,0 +1,45 @@
+hi everyone today we'll be creating a shader for an animated glowing material in unity
+
+this is great for glowing objects especially in dark lighting as this material was created for a group project called terminus a tower defense game where you have to prevent viruses from breaching the firewall you can see the animated material in use of the play area so let's get started on the shader unity i've already set up two objects with the basic unity material which will be changed to our customer down the line
+
+first off create a standard surface shader and rename it to standard emissive we're going to be using this to render the base material the top line here tells you where is the shadow located right now it's located under the custom tab but if you want you can choose where it's located by changing this string i'm going to remove the front custom so it will appear directly in the drop-down list instead we can also see that in the current material there are already some default properties that we set up for us however we donate all of them so commented the glossiness and metallic properties including all the references to them we also won't be needing the unity instancing support either instead what we do need to add other unity pbs lighting for physically based shading random queue of geometry under the substituted text since we're working with an opaque object
+
+with those setup let's start working on the properties we're going to start by renaming main texture to albedo and adding in an additional alpha a to its name this is left as 2d as a 2d texture
+
+rename all the references of main texture to albedo 2. to make the references clearer under void surf we're also going to rename c to albedo at the same time shift the color to here instead
+
+if you have worked with 3d objects before you might know that there are other textures that are added to make the object look more realistic so we are also going to add two more properties normal and mass map textures normal maps handle the bumps and dense of a 3d material
+
+as for massmap it's quite different from the rest of the textures remember recommended glossiness amateur properties last minute has it covered the different channels rgba that makes up the mask represents metallic occlusion detail mask and smoothness respectively essentially combining four textures into one you can also put any of these individual textures into this slot and it will still work perfectly fine however if you want to include two or more of these but do not have a mask map then you need to have them listed as individual properties instead like this next call the type of data for each property under the subshader to have them show up in the random material copy and paste this line for albedo texture and change the property name to advancement do this for normal too but you need to fix 3 instead
+
+also put the texture inside the unpacked scale normal function to unpack the map with a scale of 1. below it assign the output o with the properties so all.normal is normal for mass map as mentioned before assign a different channels to their respective texture whilst map r for metallic g for occlusion b for detail mask and a for smoothness
+
+however we don't need the detail mask since that is only required for very close-up details of the object here's also where if you have created individual channels for any of these properties reference them here instead of mass map going back to unity you can see the properties have been updated with the ones we wrote and in all the textures and you should be able to see that the material is working properly so now we're going to move on to the exciting part making this material glow and animated the glow as you might have guessed is handled by emission just like a normal standard material however we're going to make it pulse so that it looks more organic and admission for the texture emission color for the color of the emission and emission intensity for the base brightness of the emission these three properties are also found in the normal material for the pulsing we need two more float values emission glow for heartbreak to glow and pulsing and emission glue duration for how long is one cycle of the pulse for now let's set the default amount to 1 for the glows and 5 seconds for the duration as usual write this down here
+
+and add in the fix 4 for emission for the output we're going to write a formula this is to get the color emission texture which is then multiplied by the strength of emission this part is in brackets and is where we are going to control the pulsing emission intensity for the base intensity plus the additional glow that is added to the base intensity based on two things the time since the level has been loaded and the duration of the glow cycle
+
+we are also using absolute here so that the resulting glow would never be lower than the base intensity let's see this in action
+
+to make the housing more obvious you can either increase the intensity or the glow based on what you need now we're going to create a new shader but this time it's an unlit shader we're going to copy some of these components into our shader to create the passing animation so that not all parts of the texture will glow uniformly copy everything underpass and paste it here so that you render the surface shader before this
+
+also add in the tag render type fade which will utilize the transparency value from the texture that is rendered here to create an overlay on the base material at the same time add zero on for writing to the buffer and blend this color zero for multiplicative blending time
+
+once again renaming texture to scrolling mask for all the references
+
+and create a property for this under the properties section
+
+before proceeding further for the code let's make the overlay texture first open up photoshop or any drawing surface that you have and create a new canvas of 1 0 2 4 x 1 0 2 4 pixels
+
+right click the paint bucket tool and you will see this this is the gradient tool but first let me backtrack slightly transparency value is determined based on the grayscale of the texture with black being opaque and white being transparent thus as we want the ingredient for the illumination we need the texture to have a gradient going from darker gray or black to white so open up the color picker and then the two ends pick a darker shade i'm going with dark gray so that the dimmer section of the material will still have a cycle coming through
+
+at the center make it white while holding shift when you drag your mouse down to from the top to the bottom you have this beautiful gradient save this as a png not by immunity add this to the material and you'll be able to faintly see the gradient overlay
+
+now time to make this overlay move
+
+back here create two more float properties called scroll x and scroll y with a default value of 0.2
+
+and then i'm here too
+
+next under fragment we're going to move the uv of the texture by multiplying time dot y before scroll values and then adding it to the uv
+
+so yeah i hope you enjoyed and there we go the shader is complete let's take a look at our final product
