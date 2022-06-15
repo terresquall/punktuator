@@ -1,0 +1,17 @@
+{
+	"generic-dictionary": {
+		"center": "centre"
+	},
+	"unity-dictionary": {
+		"unity": "Unity",
+		"update": "Update()",
+		"start": "Start()",
+		"x position": "x-position",
+		"x value": "x-value",
+		"y position": "y-position",
+		"y value": "y-value",
+		"z position": "z-position",
+		"z value": "z-value",
+		"zero": "0"
+	}
+}
