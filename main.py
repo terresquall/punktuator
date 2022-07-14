@@ -53,8 +53,29 @@ class Punktuator:
 		self.modelPath = self.determineModel()
 		self.inputPath = self.determineInputFile()
 		self.outputPath = self.determineOutputPath()
-
+		self.dictionary = self.initDictionary()
 		self.run()
+
+	def initDictionary(self):
+	
+		# Do we use the dictionary?
+		useDict = input("dictionary.json found. Use dictionary? (y/n) ")
+		if useDict.lower() != "y":
+			return None
+	
+		# Retrieve the file.
+		try:
+			with open("dictionary.json") as dictionary:
+				return json.loads(dictionary.read())
+		
+		except ModuleNotFoundError:
+			print("json module not found.")
+		
+		except FileNotFoundError:
+			print("dictionary.json not found. Ignoring...")
+			
+		except json.decoder.JSONDecodeError:
+			print("dictionary.json contains invalid JSON.")
 
 	def initConfig(self):
 		# Read the settings file to get the paths that we want.
@@ -67,9 +88,11 @@ class Punktuator:
 			print("json module not found.")
 
 		except FileNotFoundError:
+			print("config.json not found. Generating file...")
 			return self.regenerateConfig()
 
 		except json.decoder.JSONDecodeError:
+			print("config.json contains invalid JSON. Regenerating...")
 			return self.regenerateConfig()
 
 	def regenerateConfig(self):
@@ -185,6 +208,19 @@ class Punktuator:
 		path = self.inputPath.replace(self.config["inputDirectory"], self.config["outputDirectory"])
 		print("File will be output to {:s}.".format(path))
 		return path
+		
+	# Replace text in dictionary.
+	# NOT ENTIRELY DONE. STILL SOME ISSUES.
+	def processWithDictionary(self, stringToProcess):
+		# If dictionary is not valid, move on.
+		if type(self.dictionary) is dict:
+		
+			# Loop through each dictionary and replace words in there.
+			for cat, subdict in self.dictionary.items():
+				for k, v in subdict.items():
+					stringToProcess = stringToProcess.replace(k,v)
+				
+		return stringToProcess
 
 	def run(self):
 
@@ -212,7 +248,10 @@ class Punktuator:
 					
 					for timing, text in result_dictionary.items():
 						wholeText += text
-						
+					
+					# Process text with dictionary.
+					wholeText = self.processWithDictionary(wholeText)
+					
 					# Punctuate the text.
 					print("\nPunctuating, please wait...\n")
 					punctuated_text = p.punctuate(wholeText).replace(". ", ".\n\n")
@@ -225,7 +264,8 @@ class Punktuator:
 						saved.write(finalText)
 						print("\nFile successfully output to {:s}.".format(self.outputPath))
 				else:
-					result = self.processInputTextWithoutTimings(f.readlines())
+					result = self.processWithDictionary( self.processInputTextWithoutTimings(f.readlines()) )
+					
 					print("Punctuating, please wait...\n")
 					punctuated_text = p.punctuate(result).replace(". ", ".\n\n")
 
